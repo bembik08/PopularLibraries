@@ -1,19 +1,16 @@
 package ru.gb.popularlibraries
 
-class MainPresenter(val view: MainView, val model : CountersModel) {
+import com.github.terrakok.cicerone.Router
+import moxy.MvpPresenter
 
-    fun buttonOneClicked () {
-        model.counters[0]++
-        view.setCounterOne(model.counters[0].toString())
+class MainPresenter(val router: Router, val screens: IScreens) : MvpPresenter<MainView>() {
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        router.replaceScreen(screens.users())
     }
 
-    fun buttonTwoClicked () {
-        model.counters[1]++
-        view.setCounterTwo(model.counters[1].toString())
-    }
-
-    fun buttonThreeClicked () {
-        model.counters[2]++
-        view.setCounterThree(model.counters[2].toString())
+    fun backClicked() {
+        router.exit()
     }
 }
