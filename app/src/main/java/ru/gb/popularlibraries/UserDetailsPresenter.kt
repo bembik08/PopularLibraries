@@ -3,12 +3,23 @@ package ru.gb.popularlibraries
 import com.github.terrakok.cicerone.Router
 import moxy.MvpPresenter
 
-class UserDetailsPresenter (private val router: Router, private val user: GithubUser) :
+class UserDetailsPresenter (private val router: Router, val userID: Long) :
     MvpPresenter<UserDetailsView>() {
 
-    fun setUserData () {
-        val name = user.login
-        viewState.setUserName(name)
+    private val usersRepo = GithubUsersRepo
+
+    fun getUserData() {
+        usersRepo
+            .getUserDataObservable(userID)
+            .subscribe({ user ->
+                sendUserDataToFragment (user)
+            }, { error ->
+                println("Error: ${error.message}")
+            })
+    }
+
+    private fun sendUserDataToFragment(user: GithubUser) {
+        viewState.setUserData(user)
     }
 
     fun backPressed(): Boolean {
