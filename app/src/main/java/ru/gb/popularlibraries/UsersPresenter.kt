@@ -39,13 +39,18 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
         disposableUsersList.add(
             usersRepo
                 .getUsersListObservable()
-                .subscribe({ user ->
-                    usersListPresenter.users.add(user)
+                .subscribe({ usersList ->
+                    usersListPresenter.users.addAll(usersList)
                     viewState.updateList()
                 }, { error ->
                     println("Error: ${error.message}")
                 })
         )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposableUsersList.dispose()
     }
 
     fun backPressed(): Boolean {

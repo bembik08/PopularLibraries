@@ -8,7 +8,7 @@ import ru.gb.popularlibraries.databinding.ActivityMainBinding
 
 class MainActivity : MvpAppCompatActivity(), MainView {
 
-    val navigator = AppNavigator(this, R.id.container)
+    private val navigator = AppNavigator(this, R.id.container)
 
     private val presenter by moxyPresenter { MainPresenter(App.router, AndroidScreens()) }
     private var vb: ActivityMainBinding? = null

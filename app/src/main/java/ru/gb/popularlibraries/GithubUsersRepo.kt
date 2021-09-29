@@ -1,6 +1,9 @@
 package ru.gb.popularlibraries
 
-import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Maybe
+import io.reactivex.rxjava3.core.Maybe.create
+import io.reactivex.rxjava3.core.MaybeOnSubscribe
+import io.reactivex.rxjava3.core.Single
 
 object GithubUsersRepo {
 
@@ -16,12 +19,19 @@ object GithubUsersRepo {
         return repositories
     }
 
-    fun getUsersListObservable(): Observable<GithubUser> {
-        return Observable.fromIterable(repositories)
+    fun getUsersListObservable(): Single<List<GithubUser>> {
+        return Single.just(repositories)
     }
 
-    fun getUserDataObservable(userID: Long): Observable<GithubUser> {
-        val user = repositories.first { u -> u.id == userID }
-        return Observable.just(user)
+    fun getUserDataObservable(userID: Long): Maybe<GithubUser> {
+        return create(MaybeOnSubscribe {
+            if (it.isDisposed) return@MaybeOnSubscribe
+
+            val user = repositories.first { u -> u.id == userID }
+
+            if (!user.equals("")) {
+                it.onSuccess((user))
+            } else it.onComplete ()
+        })
     }
 }

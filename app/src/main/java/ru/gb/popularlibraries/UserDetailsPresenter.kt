@@ -9,13 +9,11 @@ class UserDetailsPresenter (private val router: Router, val userID: Long) :
     private val usersRepo = GithubUsersRepo
 
     fun getUserData() {
-        usersRepo
+            usersRepo
             .getUserDataObservable(userID)
-            .subscribe({ user ->
-                sendUserDataToFragment (user)
-            }, { error ->
-                println("Error: ${error.message}")
-            })
+                .doOnSubscribe { println("onSubscribe") }
+                .doOnSuccess {user -> sendUserDataToFragment(user)}
+                .doOnError { error -> println( "Error: $error") }
     }
 
     private fun sendUserDataToFragment(user: GithubUser) {
