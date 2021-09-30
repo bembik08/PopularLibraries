@@ -1,11 +1,16 @@
 package ru.gb.popularlibraries
 
 import com.github.terrakok.cicerone.Router
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.core.Scheduler
 import moxy.MvpPresenter
 
-class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
-    MvpPresenter<UsersView>() {
+class UsersPresenter(
+    private val uiScheduler: Scheduler,
+    private val usersRepo: IGithubUsersRepo,
+    private val router: Router,
+    private val screens: IScreens
+)
+    : MvpPresenter<UsersView>() {
 
     class UsersListPresenter : IUserListPresenter {
         val users = mutableListOf<GithubUser>()
@@ -15,7 +20,8 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
 
         override fun bindView(view: UserItemView) {
             val user = users[view.pos]
-            view.setLogin(user.login)
+            user.login?.let { view.setLogin(it) }
+            user.avatarUrl?.let { view.loadAvatar(it) }
         }
     }
 
@@ -24,37 +30,20 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
-        getUsersFromObservable()
+        getUsersFromNet()
 
         usersListPresenter.itemClickListener = { itemView ->
             //TODO: переход на экран пользователя c помощью router.navigateTo
             val user = usersListPresenter.users[itemView.pos]
-            router.navigateTo(AndroidScreens().details(user.id))
+            router.navigateTo(screens.userDetails(user))
         }
     }
 
-    private val disposableUsersList = CompositeDisposable()
-
-    private fun getUsersFromObservable () {
-        disposableUsersList.add(
-            usersRepo
-                .getUsersListObservable()
-                .subscribe({ usersList ->
-                    usersListPresenter.users.addAll(usersList)
-                    viewState.updateList()
-                }, { error ->
-                    println("Error: ${error.message}")
-                })
-        )
+    private fun getUsersFromNet() {
+        TODO("Not yet implemented")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposableUsersList.dispose()
-    }
+    fun backPressed() {
 
-    fun backPressed(): Boolean {
-        router.exit()
-        return true
     }
 }

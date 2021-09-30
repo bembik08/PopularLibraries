@@ -1,42 +1,54 @@
 package ru.gb.popularlibraries
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import by.kirich1409.viewbindingdelegate.viewBinding
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.fragment_details.*
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import ru.gb.popularlibraries.databinding.FragmentDetailsBinding
 
-class UserDetailsFragment (val userID : Long = 0) :
-    MvpAppCompatFragment(), BackButtonListener, UserDetailsView {
+class UserDetailsFragment(private val user: GithubUser) :
+    MvpAppCompatFragment(R.layout.fragment_details), BackButtonListener, UserDetailsView {
 
     companion object {
-        fun newInstance(userID: Long) = UserDetailsFragment(userID)
+        fun newInstance(user: GithubUser): Fragment = UserDetailsFragment(user)
     }
 
-    private val presenter by moxyPresenter { UserDetailsPresenter(App.router, userID) }
-
-    private var vb: FragmentDetailsBinding? = null
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        FragmentDetailsBinding.inflate(inflater, container, false).also {
-            vb = it
-            vb?.back?.setOnClickListener { backPressed() }
-
-            presenter.getUserData()
-        }.root
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        vb = null
+    private val presenter by moxyPresenter {
+        UserDetailsPresenter(
+            RetrofitGithubUsersRepo(ApiHolder.api),
+            CiceroneObject.router,
+            user,
+            AndroidSchedulers.mainThread(),
+            AndroidScreens()
+        )
     }
+
+    private val viewBinding: FragmentDetailsBinding by viewBinding()
+
+    private var adapter: RepoRVAdapter? = null
 
     override fun backPressed() = presenter.backPressed()
 
-    override fun setUserData (user : GithubUser) {
-        val login = user.login
-        vb?.detailsName?.text = login
-        Toast.makeText(context, "Name $login set from presenter", Toast.LENGTH_SHORT).show()
+    override fun setUserPage(user: GithubUser) {
+        viewBinding.detailsName.text = user.login
+        user.avatarUrl?.let { GlideImageLoader().loadInto(it, details_userImage) }
+
+        viewBinding.rvRepos.layoutManager = LinearLayoutManager(context)
+        adapter = RepoRVAdapter(presenter.userRepoListPresenter)
+        viewBinding.rvRepos.adapter = adapter
+    }
+
+    override fun updateRepoList() {
+        adapter?.notifyDataSetChanged()
+    }
+
+    override fun onLoadingRepoListError(throwable: Throwable) {
+        Toast.makeText(
+            context, "Error occurred while loading repo list: $throwable", Toast.LENGTH_SHORT
+        ).show()
     }
 }
