@@ -3,11 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.14635416666666667" />
+        <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.14270833333333333" />
         <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/layout/activity_main.xml" value="0.10144927536231885" />
-        <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/layout/fragment_details.xml" value="0.13020833333333334" />
-        <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/layout/fragment_users.xml" value="0.13020833333333334" />
-        <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/layout/item_user.xml" value="0.13020833333333334" />
+        <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/layout/fragment_repo_details.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/layout/item_repo.xml" value="0.12291666666666666" />
+        <entry key="..\:/AndroidStudioProjects/PopularLibraries/app/src/main/res/layout/item_user.xml" value="0.12291666666666666" />
         <entry key="..\:/CodingWithFun/Kotlin/PopularLibraries/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
       </map>
     </option>

@@ -1,10 +1,16 @@
 package ru.gb.popularlibraries
 
 import com.github.terrakok.cicerone.Router
+import io.reactivex.rxjava3.core.Scheduler
 import moxy.MvpPresenter
 
-class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
-    MvpPresenter<UsersView>() {
+class UsersPresenter(
+    private val uiScheduler: Scheduler,
+    private val usersRepo: IGithubUsersRepo,
+    private val router: Router,
+    private val screens: IScreens
+)
+    : MvpPresenter<UsersView>() {
 
     class UsersListPresenter : IUserListPresenter {
         val users = mutableListOf<GithubUser>()
@@ -14,7 +20,8 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
 
         override fun bindView(view: UserItemView) {
             val user = users[view.pos]
-            view.setLogin(user.login)
+            user.login?.let { view.setLogin(it) }
+            user.avatarUrl?.let { view.loadAvatar(it) }
         }
     }
 
@@ -23,23 +30,20 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
-        loadData()
+        getUsersFromNet()
 
         usersListPresenter.itemClickListener = { itemView ->
             //TODO: переход на экран пользователя c помощью router.navigateTo
             val user = usersListPresenter.users[itemView.pos]
-            router.navigateTo(AndroidScreens().details(GithubUser(user.login)))
+            router.navigateTo(screens.userDetails(user))
         }
     }
 
-    fun loadData() {
-        val users = usersRepo.getUsers()
-        usersListPresenter.users.addAll(users)
-        viewState.updateList()
+    private fun getUsersFromNet() {
+        TODO("Not yet implemented")
     }
 
-    fun backPressed(): Boolean {
-        router.exit()
-        return true
+    fun backPressed() {
+
     }
 }

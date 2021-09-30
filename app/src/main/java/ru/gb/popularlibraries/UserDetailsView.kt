@@ -1,10 +1,12 @@
 package ru.gb.popularlibraries
 
 import moxy.MvpView
-import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.SingleStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
-@StateStrategyType(AddToEndSingleStrategy::class)
+@StateStrategyType(SingleStateStrategy::class)
 interface UserDetailsView : MvpView {
-    fun setUserName (name : String)
+    fun setUserPage(user : GithubUser)
+    fun updateRepoList()
+    fun onLoadingRepoListError(throwable: Throwable)
 }
