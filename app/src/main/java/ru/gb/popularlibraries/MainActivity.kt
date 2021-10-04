@@ -1,36 +1,34 @@
 package ru.gb.popularlibraries
 
+import android.os.Bundle
+import by.kirich1409.viewbindingdelegate.CreateMethod
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.terrakok.cicerone.androidx.AppNavigator
 import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter
+import ru.gb.popularlibraries.App.Navigation.navigatorHolder
+import ru.gb.popularlibraries.App.Navigation.router
+import ru.gb.popularlibraries.databinding.ActivityMainBinding
+import ru.gb.popularlibraries.presenters.MainPresenter
+import ru.gb.popularlibraries.views.MainView
 
-class MainActivity : MvpAppCompatActivity(R.layout.activity_main), MainView {
-
+class MainActivity : MvpAppCompatActivity(), MainView {
+    private val binding : ActivityMainBinding by viewBinding(CreateMethod.INFLATE)
     private val navigator = AppNavigator(this, R.id.container)
+    private val mainPresenter by moxyPresenter { MainPresenter(router) }
 
-    private val presenter by moxyPresenter {
-        MainPresenter(
-            CiceroneObject.router,
-            AndroidScreens()
-        )
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
     }
 
     override fun onResumeFragments() {
         super.onResumeFragments()
-        CiceroneObject.navigatorHolder.setNavigator(navigator)
+        navigatorHolder.setNavigator(navigator)
     }
 
     override fun onPause() {
+        navigatorHolder.removeNavigator()
         super.onPause()
-        CiceroneObject.navigatorHolder.removeNavigator()
-    }
-
-    override fun onBackPressed() {
-        supportFragmentManager.fragments.forEach {
-            if (it is BackButtonListener && it.backPressed()) {
-                return
-            }
-        }
-        presenter.backClicked()
     }
 }
