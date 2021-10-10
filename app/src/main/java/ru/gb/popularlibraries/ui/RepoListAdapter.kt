@@ -44,6 +44,5 @@ class RepoListAdapter(private val presenter: UserPresenter.ReposPresenter) :
         }
 
         override var pos: Int = -1
-
     }
 }

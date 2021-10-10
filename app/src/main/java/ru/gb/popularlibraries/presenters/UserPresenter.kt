@@ -31,16 +31,10 @@ class UserPresenter(
             .observeOn(schedulers.main())
             .subscribe(
                 {
-                    it.let { user ->
-                        if (user != null) {
-                            viewState.showUser(user)
-                        }
-                        if (user != null) {
-                            viewState.showAvatar(user)
-                        }
-                        if (user != null) {
-                            loadReposData(user)
-                        }
+                    it?.let { user ->
+                        viewState.showUser(user)
+                        viewState.showAvatar(user)
+                        loadReposData(user)
                     }
                 },
                 viewState::showError
@@ -60,12 +54,12 @@ class UserPresenter(
                 },
                 viewState::showError
             )
-        reposPresenter.itemClickedListener = {view ->
+        reposPresenter.itemClickedListener = { view ->
             router.navigateTo(RepoScreen(repos[view.pos]).create())
         }
     }
 
-    class ReposPresenter : ItemListPresenter<RepoItemView>{
+    class ReposPresenter : ItemListPresenter<RepoItemView> {
         val repos = mutableListOf<GithubRepos>()
 
         override fun bindView(view: RepoItemView) {
@@ -75,6 +69,7 @@ class UserPresenter(
             view.setDate(repo.date)
             Log.e("repos", repo.toString())
         }
+
         override fun getCount(): Int = repos.size
         override var itemClickedListener: ((RepoItemView) -> Unit)? = null
 
@@ -85,4 +80,3 @@ class UserPresenter(
         super.onDestroy()
     }
 }
-

@@ -4,13 +4,14 @@ import ru.gb.popularlibraries.model.network.NetworkStatus
 import ru.gb.popularlibraries.model.retrofit.CloudSource
 import ru.gb.popularlibraries.model.retrofit.GithubRepos
 import ru.gb.popularlibraries.model.retrofit.GithubUser
-import ru.gb.popularlibraries.model.storage.Storage
+import ru.gb.popularlibraries.model.storage.DataSource
 import ru.gb.popularlibraries.utils.schedulers.Schedulers
 import io.reactivex.rxjava3.core.Single
+import javax.inject.Inject
 
-class RepositoryImpl(
+class RepositoryImpl @Inject constructor(
     private val cloud: CloudSource,
-    private val storage: Storage,
+    private val dataSource: DataSource,
     private val network: NetworkStatus,
     private val schedulers: Schedulers
 ) : GithubUsersRepo {
@@ -19,11 +20,11 @@ class RepositoryImpl(
         .flatMap { isOnline ->
             if (isOnline) {
                 cloud.getUsers().map { users ->
-                    storage.insertUsers(users)
+                    dataSource.insertUsers(users)
                     users
                 }
             } else {
-                storage.getUsers()
+                dataSource.getUsers()
             }
         }.subscribeOn(schedulers.background())
 
@@ -32,11 +33,11 @@ class RepositoryImpl(
         .flatMap { isOnline ->
             if (isOnline) {
                 cloud.getRepos(url).map { repos ->
-                    storage.insertGithubRepos(repos, url)
+                    dataSource.insertGithubRepos(repos, url)
                     repos
                 }
             } else {
-                storage.getRepos(url)
+                dataSource.getRepos(url)
             }
         }.subscribeOn(schedulers.background())
 
@@ -46,7 +47,7 @@ class RepositoryImpl(
             if (isOnline) {
                 cloud.getRepo(url)
             } else {
-                storage.getRepo(url)
+                dataSource.getRepo(url)
             }
         }.subscribeOn(schedulers.background())
 }

@@ -1,25 +1,32 @@
-package ru.gb.popularlibraries
+package ru.gb.popularlibraries.ui
 
 import android.os.Bundle
 import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.github.terrakok.cicerone.NavigatorHolder
+import com.github.terrakok.cicerone.Router
 import com.github.terrakok.cicerone.androidx.AppNavigator
-import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter
-import ru.gb.popularlibraries.App.Navigation.navigatorHolder
-import ru.gb.popularlibraries.App.Navigation.router
+import ru.gb.popularlibraries.R
 import ru.gb.popularlibraries.databinding.ActivityMainBinding
 import ru.gb.popularlibraries.presenters.MainPresenter
+import ru.gb.popularlibraries.ui.abs.AbsActivity
 import ru.gb.popularlibraries.views.MainView
+import javax.inject.Inject
 
-class MainActivity : MvpAppCompatActivity(), MainView {
-    private val binding : ActivityMainBinding by viewBinding(CreateMethod.INFLATE)
+class MainActivity : AbsActivity(R.layout.activity_main), MainView {
+    private val binding: ActivityMainBinding by viewBinding(CreateMethod.INFLATE)
     private val navigator = AppNavigator(this, R.id.container)
-    private val mainPresenter by moxyPresenter { MainPresenter(router) }
 
+    @Inject
+    lateinit var navigatorHolder: NavigatorHolder
+
+    @Inject
+    lateinit var router: Router
+    private val presenter by moxyPresenter { MainPresenter(router) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(this.binding.root)
+        binding.root
     }
 
     override fun onResumeFragments() {

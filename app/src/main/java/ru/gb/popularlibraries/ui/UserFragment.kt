@@ -10,20 +10,21 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
-import ru.gb.popularlibraries.App.Navigation.router
+import com.github.terrakok.cicerone.Router
+import moxy.ktx.moxyPresenter
+import ru.gb.popularlibraries.R
+import ru.gb.popularlibraries.abs.AbsFragment
 import ru.gb.popularlibraries.databinding.FragmentItemUserBinding
+import ru.gb.popularlibraries.model.GithubUsersRepo
 import ru.gb.popularlibraries.model.retrofit.GithubUser
-import ru.gb.popularlibraries.model.RepositoryFactory
-import ru.gb.popularlibraries.model.network.NetworkStatusFactory
 import ru.gb.popularlibraries.presenters.UserPresenter
 import ru.gb.popularlibraries.utils.ImageLoader
-import ru.gb.popularlibraries.utils.schedulers.SchedulersFactory
+import ru.gb.popularlibraries.utils.schedulers.Schedulers
 import ru.gb.popularlibraries.views.UserView
-import moxy.MvpAppCompatFragment
-import moxy.ktx.moxyPresenter
+import javax.inject.Inject
 
 
-class UserFragment : MvpAppCompatFragment(), UserView {
+class UserFragment : AbsFragment(R.layout.fragment_users_list), UserView {
     companion object {
         private const val ARGS_USER = "ARG_USER"
         fun newInstance(githubUserLogin: String?) = UserFragment().apply {
@@ -31,7 +32,17 @@ class UserFragment : MvpAppCompatFragment(), UserView {
         }
     }
 
-    private val imageLoader = ImageLoader
+    @Inject
+    lateinit var repository: GithubUsersRepo
+
+    @Inject
+    lateinit var schedulers: Schedulers
+
+    @Inject
+    lateinit var router: Router
+
+    @Inject
+    lateinit var imageLoader: ImageLoader
     private val binding by viewBinding<FragmentItemUserBinding>(CreateMethod.INFLATE)
     private val user by lazy {
         arguments?.getString(ARGS_USER).orEmpty()
@@ -39,8 +50,8 @@ class UserFragment : MvpAppCompatFragment(), UserView {
     private val userPresenter by moxyPresenter {
         UserPresenter(
             user,
-            RepositoryFactory.create(NetworkStatusFactory.create(context)),
-            SchedulersFactory.create(),
+            repository,
+            schedulers,
             router
         )
     }
@@ -68,7 +79,6 @@ class UserFragment : MvpAppCompatFragment(), UserView {
     override fun showError(error: Throwable) {
         Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
     }
-
 
     @SuppressLint("NotifyDataSetChanged")
     override fun updateRepose() {

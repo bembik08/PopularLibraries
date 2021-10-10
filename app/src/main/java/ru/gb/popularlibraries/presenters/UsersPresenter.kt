@@ -1,15 +1,15 @@
 package ru.gb.popularlibraries.presenters
 
 import com.github.terrakok.cicerone.Router
-import ru.gb.popularlibraries.model.retrofit.GithubUser
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.plusAssign
+import moxy.MvpPresenter
 import ru.gb.popularlibraries.model.GithubUsersRepo
+import ru.gb.popularlibraries.model.retrofit.GithubUser
 import ru.gb.popularlibraries.navigation.UserScreen
 import ru.gb.popularlibraries.utils.schedulers.Schedulers
 import ru.gb.popularlibraries.views.UserItemView
 import ru.gb.popularlibraries.views.UsersView
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.plusAssign
-import moxy.MvpPresenter
 
 class UsersPresenter(
     private val repo: GithubUsersRepo,
@@ -57,10 +57,6 @@ class UsersPresenter(
         }
     }
 
-    fun backPressed(): Boolean {
-        router.exit()
-        return true
-    }
 
     override fun onDestroy() {
         disposable.clear()

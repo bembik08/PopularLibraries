@@ -13,7 +13,7 @@
             android:id="@+id/avatarImage"
             android:layout_width="50dp"
             android:layout_height="50dp"
-         />
+            />
         <TextView
             android:id="@+id/user_login"
             android:layout_width="match_parent"

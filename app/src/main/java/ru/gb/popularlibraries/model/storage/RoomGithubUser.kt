@@ -1,6 +1,5 @@
 package ru.gb.popularlibraries.model.storage
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
